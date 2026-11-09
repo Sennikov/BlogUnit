@@ -1,0 +1,15 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid {{ git_status.color }};">
+    <strong style="color: {{ git_status.color }}; font-size: 16px;">
+        {{ git_status.text }}
+    </strong>
+    {% if git_status.update_available %}
+    <p style="margin: 5px 0 0 0; color: #666;">
+        Ветка: {{ git_status.branch }}. Нажмите кнопку «Обновить блог», чтобы применить изменения.
+    </p>
+    {% endif %}
+</div>
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "admin/index.html" %}
+{% load admin_extras %}
+
+{% block content %}
+<!-- Блок статуса Git -->
+{% get_git_status as git_info %}
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid
+        {% if git_info.error %}#dc3545
+        {% elif git_info.update_available %}#ffc107
+        {% else %}#28a745{% endif %};">
+
+    <h3 style="margin-top: 0; margin-bottom: 10px;">Статус сайта (Версия: {{ git_info.version|default:"unknown" }})</h3>
+
+    {% if git_info.error %}
+    <p style="color: #dc3545; margin: 0;">⚠️ Ошибка Git: {{ git_info.error }}</p>
+    {% elif git_info.update_available %}
+    <p style="margin: 0 0 10px 0;">🔔 <strong>Доступно обновление!</strong> На GitHub появились новые изменения.</p>
+    <form action="{% url 'blog:admin_deploy' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="button" style="background-color: #ffc107; color: #000; font-weight: bold; padding: 8px 15px; border-radius: 4px; cursor: pointer; border: none;">
+            🔄 Обновить блог с GitHub
+        </button>
+    </form>
+    {% else %}
+    <p style="color: #28a745; margin: 0;">✅ У вас установлена самая свежая версия сайта.</p>
+    {% endif %}
+</div>
+
+<!-- Стандартный список приложений админки -->
+{{ block.super }}
+{% endblock %}

@@ -14,6 +14,8 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('uploader/', markdown_uploader, name='markdown_uploader'),
 
+    path('admin-deploy/', views.admin_deploy_view, name='admin_deploy'),
+
     path('ads/click/<int:pk>/', views.ad_click, name='ad_click'),
     path('ads/impression/<int:pk>/', views.ad_impression, name='ad_impression'),
 
@@ -24,7 +26,5 @@ urlpatterns = [
 
     #Статьи
     path('<slug:category_slug>/<slug:post_slug>/', views.post_detail, name='post_detail'),
-
-
 
 ]

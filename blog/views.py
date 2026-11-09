@@ -8,9 +8,23 @@ from django.shortcuts import render
 from django.db.models import F
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
+from .utils import apply_git_update, get_git_info
 
-
-
+#Функция обновления сайта!
+@staff_member_required
+def admin_deploy_view(request):
+    if request.method == 'POST':
+        # Проверяем, есть ли обновления перед тем, как применять
+        info = get_git_info()
+        if info['update_available']:
+            log = apply_git_update()
+            messages.success(request, f"Обновление применено!\n{log}")
+        else:
+            messages.info(request, "Обновлений не найдено. Вы на последней версии.")
+    return redirect(request.META.get('HTTP_REFERER', '/admin/'))
 
 def home(request):
     category = Category.objects.all()

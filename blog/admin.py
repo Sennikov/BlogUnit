@@ -2,11 +2,14 @@ from email.policy import default
 
 from django.contrib import admin
 from unicodedata import category
-
 from .models import Category, Post, Page, Draft, AdBlock, SiteSettings, Tag
 from django.utils import timezone
 from django.utils.html import format_html
 # admin.site.register(Post,Category)
+from admin_extra_buttons.api import ExtraButtonsMixin, button
+from django.urls import reverse
+from django.shortcuts import redirect
+from .utils import get_git_info
 
 # Register your models here.
 
@@ -36,6 +39,47 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     date_hierarchy = 'created_date'
     list_editable = ('is_published',)
+
+
+    # @button(
+    #     label='🔄 Обновить блог с GitHub',
+    #     change_form=False,
+    #     change_list=True,
+    #     permission='superuser',  # Только суперпользователь
+    #     html_attrs={'style': 'background-color: #417690; color: white; font-weight: bold;'}
+    # )
+    # def update_from_git(self, request):
+    #     from django.urls import reverse
+    #     from django.shortcuts import redirect
+    #     return redirect(reverse('blog:admin_deploy'))
+    #
+    # # 2. Отображение версии и статуса (текст над кнопками)
+    #     def changelist_view(self, request, extra_context=None):
+    #         extra_context = extra_context or {}
+    #
+    #     try:
+    #         git_info = get_git_info()
+    #     except Exception as e:
+    #         git_info = {'error': str(e), 'version': 'unknown', 'update_available': False}
+    #
+    #     # Определяем цвет и текст статуса
+    #     if git_info.get('error'):
+    #         status_text = f"⚠️ Ошибка Git: {git_info.get('error')}"
+    #         status_color = '#dc3545' # Красный
+    #     elif git_info.get('update_available'):
+    #         status_text = f"🔔 Доступно обновление! Текущая версия: {git_info.get('version', 'unknown')}"
+    #         status_color = '#ffc107' # Оранжевый
+    #     else:
+    #         status_text = f"✅ Версия {git_info.get('version', 'unknown')} актуальна."
+    #         status_color = '#28a745' # Зеленый
+    #
+    #     extra_context['git_status'] = {
+    #         'text': status_text,
+    #         'color': status_color,
+    #         'branch': git_info.get('branch', 'unknown')
+    #     }
+    #
+    #     return super().changelist_view(request, extra_context=extra_context)
 
     #URL (SLUG) Заполняется автоматически у статей, пользователь не должен его менять.
     readonly_fields = ('slug','preview_preview')
@@ -232,3 +276,5 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
 
 
+from django.contrib import admin
+admin.site.index_template = 'admin/custom_index.html'
