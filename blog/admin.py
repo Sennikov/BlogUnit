@@ -41,6 +41,7 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ('is_published',)
 
 
+
     # @button(
     #     label='🔄 Обновить блог с GitHub',
     #     change_form=False,
