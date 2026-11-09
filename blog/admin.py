@@ -33,7 +33,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('preview_thumb','title','get_category','created_date', 'views', 'published_date', 'is_published','slug')
+    list_display = ('preview_thumb','title','get_category','created_date', 'views', 'published_date', 'is_published','preview_link','slug')
     list_display_links = ('title',)
     list_filter = ('category','is_published')
     search_fields = ('title', 'content')
@@ -41,46 +41,19 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ('is_published',)
 
 
+    @admin.display(description='Предпросмотр')
+    def preview_link(self, obj):
+        url = reverse('blog:preview_post', args=[obj.pk])
+        return format_html('<a href="{}" target="_blank">👁️ Предпросмотр</a>', url)
 
-    # @button(
-    #     label='🔄 Обновить блог с GitHub',
-    #     change_form=False,
-    #     change_list=True,
-    #     permission='superuser',  # Только суперпользователь
-    #     html_attrs={'style': 'background-color: #417690; color: white; font-weight: bold;'}
-    # )
-    # def update_from_git(self, request):
-    #     from django.urls import reverse
-    #     from django.shortcuts import redirect
-    #     return redirect(reverse('blog:admin_deploy'))
-    #
-    # # 2. Отображение версии и статуса (текст над кнопками)
-    #     def changelist_view(self, request, extra_context=None):
-    #         extra_context = extra_context or {}
-    #
-    #     try:
-    #         git_info = get_git_info()
-    #     except Exception as e:
-    #         git_info = {'error': str(e), 'version': 'unknown', 'update_available': False}
-    #
-    #     # Определяем цвет и текст статуса
-    #     if git_info.get('error'):
-    #         status_text = f"⚠️ Ошибка Git: {git_info.get('error')}"
-    #         status_color = '#dc3545' # Красный
-    #     elif git_info.get('update_available'):
-    #         status_text = f"🔔 Доступно обновление! Текущая версия: {git_info.get('version', 'unknown')}"
-    #         status_color = '#ffc107' # Оранжевый
-    #     else:
-    #         status_text = f"✅ Версия {git_info.get('version', 'unknown')} актуальна."
-    #         status_color = '#28a745' # Зеленый
-    #
-    #     extra_context['git_status'] = {
-    #         'text': status_text,
-    #         'color': status_color,
-    #         'branch': git_info.get('branch', 'unknown')
-    #     }
-    #
-    #     return super().changelist_view(request, extra_context=extra_context)
+    def view_on_site(self, obj):
+        # Эта функция добавляет ссылку "Посмотреть на сайте"
+        if obj.is_published:
+            url = reverse('blog:post_detail', args=[obj.category.slug, obj.slug]) if obj.category else reverse('blog:slug_detail', args=[obj.slug])
+        else:
+            url = reverse('blog:preview_post', args=[obj.pk])
+        return url
+
 
     #URL (SLUG) Заполняется автоматически у статей, пользователь не должен его менять.
     readonly_fields = ('slug','preview_preview')

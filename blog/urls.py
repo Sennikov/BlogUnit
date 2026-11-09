@@ -19,6 +19,7 @@ urlpatterns = [
     path('ads/click/<int:pk>/', views.ad_click, name='ad_click'),
     path('ads/impression/<int:pk>/', views.ad_impression, name='ad_impression'),
 
+    path('preview/<int:pk>/', views.preview_post, name='preview_post'),
 
     path('tag/<slug:slug>/', views.tag_detail, name='tag_detail'),
     # Один маршрут для категорий и страниц

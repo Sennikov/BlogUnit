@@ -202,3 +202,11 @@ def ad_impression(request, pk):
         b'\x02\x44\x01\x00\x3b',
         content_type='image/gif',
     )
+
+
+@staff_member_required
+def preview_post(request, pk):
+    # Ищем статью по ID, не проверяя is_published
+    post = get_object_or_404(Post, pk=pk)
+    # Рендерим тот же шаблон, что и для обычной статьи
+    return render(request, 'blog/post_detail.html', {'post': post})
