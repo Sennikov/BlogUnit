@@ -13,6 +13,7 @@ db.sqlite3
 *.sqlite3
 
 settings_new.py
+settings_настройки_по_умолчанию.py
 
 # Пользовательские файлы (картинки, документы)
 media/
