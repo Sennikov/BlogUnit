@@ -1,0 +1,25 @@
+# Окружение Python
+.venv/
+venv/
+env/
+
+# Секреты и переменные окружения
+.env
+.env.*
+*.env
+
+# Базы данных
+db.sqlite3
+*.sqlite3
+
+settings.py
+settings_new.py
+
+# Пользовательские файлы (картинки, документы)
+media/
+staticfiles/
+
+# Файлы Python
+__pycache__/
+*.py[cod]
+*.log

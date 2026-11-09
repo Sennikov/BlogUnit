@@ -1,0 +1,7 @@
+{% if ads %}
+<div class="space-y-4 {% if position == 'header' %}mb-10{% endif %}">
+    {% for ad in ads %}
+    {% include "blog/_ad_block.html" with ad=ad %}
+    {% endfor %}
+</div>
+{% endif %}

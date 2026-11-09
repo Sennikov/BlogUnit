@@ -1,0 +1,26 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="mt-10 flex items-center justify-between rounded-2xl border border-gray-200/80 bg-white px-5 py-4 text-sm shadow-sm">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}"
+       class="inline-flex items-center gap-1 font-semibold text-brand hover:underline">
+        ← Назад
+    </a>
+    {% else %}
+    <span class="text-gray-300">← Назад</span>
+    {% endif %}
+
+    <span class="font-mono text-gray-500">
+            <strong class="text-gray-900">{{ page_obj.number }}</strong>
+            / {{ page_obj.paginator.num_pages }}
+        </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}"
+       class="inline-flex items-center gap-1 font-semibold text-brand hover:underline">
+        Вперёд →
+    </a>
+    {% else %}
+    <span class="text-gray-300">Вперёд →</span>
+    {% endif %}
+</nav>
+{% endif %}

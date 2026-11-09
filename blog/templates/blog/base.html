@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Unitproglab{% endblock %}</title>
+    <meta name="description" content="{% block description %}Unitproglab — блог о технологиях, разработке и IT-индустрии. {% endblock %}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{% block canonical %}{{ request.path }}{% endblock %}">
+
+    <link rel="alternate" type="application/rss+xml" title="Unitproglab — RSS" href="{% url 'rss' %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:site_name" content="Unitproglab">
+    <meta property="og:title" content="{% block og_title %}Unitproglab — блог о технологиях{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Блог о технологиях, разработке и IT-индустрии.{% endblock %}">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    {% block og_image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}/static/og-default.jpg">
+    {% endblock %}
+    <meta property="og:locale" content="ru_RU">
+
+    {% block robots %}<meta name="robots" content="index, follow">{% endblock %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <!-- Стили для слайдера картинок -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+        @theme {
+            --color-brand: #378ff6;
+            --color-brand-dark: #1e6fd9;
+            --color-canvas: #f5f6f8;
+        }
+    </style>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Раскрывающиеся рубрики (сайдбар + мобильный блок) */
+        details.sidebar-cat > summary,
+        details.mobile-cats > summary,
+        details.drawer-cat > summary { list-style: none; cursor: pointer; }
+        details.sidebar-cat > summary::-webkit-details-marker,
+        details.mobile-cats > summary::-webkit-details-marker,
+        details.drawer-cat > summary::-webkit-details-marker { display: none; }
+
+        details.sidebar-cat > summary .chevron,
+        details.mobile-cats > summary .chevron,
+        details.drawer-cat > summary .chevron { transition: transform 0.2s ease; }
+        details.sidebar-cat[open] > summary .chevron,
+        details.mobile-cats[open] > summary .chevron,
+        details.drawer-cat[open] > summary .chevron { transform: rotate(180deg); }
+
+        /* Типографика статьи */
+        .prose-content p { margin-bottom: 1.25rem; line-height: 1.8; color: #374151; font-size: 1.0625rem; }
+        .prose-content h2 { font-size: 1.625rem; font-weight: 700; margin: 2.5rem 0 1rem; color: #111827; letter-spacing: -0.02em; }
+        .prose-content h3 { font-size: 1.3rem; font-weight: 600; margin: 2rem 0 0.75rem; color: #111827; }
+        .prose-content h4 { font-weight: 600; margin: 2rem 0 0.75rem; color: #111827; }
+
+
+.prose-content ul {
+    list-style-type: disc;
+    margin: 1rem 0 1.5rem 1.5rem;
+    padding-left: 0.5rem; /* Уменьшили отступ контейнера */
+    line-height: 1.8;
+    color: #374151;
+}
+
+.prose-content ol {
+    list-style-type: decimal;
+    margin: 1rem 0 1.5rem 1.5rem;
+    padding-left: 0.5rem;
+    line-height: 1.8;
+    color: #374151;
+}
+
+/* Добавляем отступ для самих пунктов списка */
+.prose-content li {
+    padding-left: 0.5rem; /* Вот этот отступ создаст воздух между цифрой и текстом */
+    margin-bottom: 0.5rem;
+}
+
+        .prose-content li { margin-bottom: 0.4rem; }
+        .prose-content a { color: #378ff6; text-decoration: underline; text-underline-offset: 2px; }
+        .prose-content a:hover { color: #1e6fd9; }
+        .prose-content img { max-width: 100%; border-radius: 0.75rem; margin: 2rem 0; }
+        .prose-content blockquote {
+            border-left: 3px solid #378ff6;
+            padding: 0.75rem 0 0.75rem 1.25rem;
+            margin: 2rem 0;
+            color: #4b5563;
+            font-style: italic;
+            background: #f8fafc;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        scroll-behavior: smooth;
+        scroll-padding-top: 80px;
+        .prose-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 2rem auto; /* Центрируем картинку по горизонтали */
+    border-radius: 0.75rem;
+    cursor: zoom-in; /* Курсор в виде лупы */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Эффект при наведении */
+.prose-content img:hover {
+    transform: scale(1.02); /* Легкое увеличение */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Тень для объема */
+}
+        .prose-content code {
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
+            font-family: 'JetBrains Mono', monospace;
+            color: #1e293b;
+        }
+        .prose-content pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.7;
+        }
+        .prose-content pre code { background: transparent; padding: 0; color: inherit; }
+    </style>
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Unitproglab",
+            "url": "{{ request.scheme }}://{{ request.get_host }}/",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "{{ request.scheme }}://{{ request.get_host }}/search/?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+    </script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="h-full bg-canvas text-gray-900 antialiased selection:bg-brand/20">
+
+<!-- ═══════════════ ШАПКА ═══════════════ -->
+<header class="fixed inset-x-0 top-0 z-40 h-16 border-b border-gray-200/60 bg-white/80 backdrop-blur-xl">
+    <div class="mx-auto flex h-full max-w-7xl items-center justify-between gap-3 px-4 lg:gap-6 lg:px-6">
+
+        <a href="{% url 'blog:home' %}" class="shrink-0 text-xl font-extrabold tracking-tight text-gray-900">
+            Unitprog<span class="text-brand">lab</span>
+        </a>
+
+        <nav class="hidden items-center gap-1 lg:flex">
+            {% for item in menu_header %}
+            <a href="{{ item.url }}"
+               class="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand">
+                {{ item.title }}
+            </a>
+            {% endfor %}
+        </nav>
+
+        <div class="flex items-center gap-2">
+            <form action="{% url 'blog:search' %}" method="get" class="hidden items-center gap-2 sm:flex">
+                <div class="relative">
+                    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="search" name="q" placeholder="Поиск..."
+                           value="{{ request.GET.q|default:'' }}"
+                           class="w-44 rounded-full border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm outline-none transition focus:w-56 focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20 lg:w-52 lg:focus:w-64">
+                </div>
+                <button type="submit"
+                        class="rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand">
+                    Найти
+                </button>
+            </form>
+
+            <!-- Кнопка "бургер" — видна ниже lg -->
+            <button type="button" onclick="toggleMobileMenu(true)"
+                    class="rounded-lg p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden"
+                    aria-label="Открыть меню">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- ═══════════════ ВЫЕЗЖАЮЩЕЕ МЕНЮ (мобильное) ═══════════════ -->
+<!-- Затемнение -->
+<div id="mobile-backdrop"
+     class="pointer-events-none fixed inset-0 z-50 bg-black/40 opacity-0 transition-opacity duration-300 lg:hidden"
+     onclick="toggleMobileMenu(false)"></div>
+
+<!-- Панель -->
+<aside id="mobile-menu"
+       class="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] -translate-x-full overflow-y-auto bg-white shadow-xl transition-transform duration-300 lg:hidden"
+       aria-label="Мобильное меню">
+
+    <div class="flex items-center justify-between border-b border-gray-100 p-4">
+        <a href="{% url 'blog:home' %}" class="text-lg font-extrabold tracking-tight text-gray-900">
+            Unitprog<span class="text-brand">lab</span>
+        </a>
+        <button type="button" onclick="toggleMobileMenu(false)"
+                class="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100"
+                aria-label="Закрыть меню">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Поиск в меню -->
+    <form action="{% url 'blog:search' %}" method="get" class="border-b border-gray-100 p-4">
+        <div class="flex gap-2">
+            <input type="search" name="q" placeholder="Поиск по сайту..."
+                   class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none transition focus:border-brand focus:bg-white">
+            <button type="submit"
+                    class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand">
+                Найти
+            </button>
+        </div>
+    </form>
+
+    <!-- Рубрики в меню -->
+    <div class="p-4">
+        <h2 class="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+            <span class="h-1.5 w-1.5 rounded-full bg-brand"></span>
+            Рубрики
+        </h2>
+        <nav class="space-y-0.5">
+            {% for item in menu_sidebar %}
+            {% if item.kind == 'category' %}
+            {% if item.children %}
+            <details class="drawer-cat"
+                     {% if request.path == item.url or item.url in request.path %}open{% endif %}>
+                <summary class="flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-brand">
+                    <a href="{{ item.url }}"
+                       onclick="event.stopPropagation();"
+                       class="flex-1 transition {% if request.path == item.url %}font-semibold text-brand{% endif %}">
+                        {{ item.title }}
+                    </a>
+                    <span class="rounded p-0.5 text-gray-400">
+                        <svg class="chevron h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </span>
+                </summary>
+                <div class="ml-3 mt-1 space-y-0.5 border-l border-gray-100 pl-3">
+                    {% for child in item.children %}
+                    <a href="{{ child.url }}"
+                       class="block rounded-lg py-1.5 pr-3 text-sm transition hover:bg-gray-50 hover:text-brand
+                              {% if request.path == child.url %}font-semibold text-brand{% else %}text-gray-500{% endif %}">
+                        {{ child.title }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </details>
+            {% else %}
+            <a href="{{ item.url }}"
+               class="block rounded-lg px-3 py-2.5 text-sm transition hover:bg-gray-50 hover:text-brand
+                      {% if request.path == item.url %}font-semibold text-brand{% else %}font-medium text-gray-700{% endif %}">
+                {{ item.title }}
+            </a>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </nav>
+    </div>
+
+    <!-- Страницы в меню -->
+    {% if menu_sidebar %}
+    <div class="border-t border-gray-100 p-4">
+        <h2 class="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+            <span class="h-1.5 w-1.5 rounded-full bg-brand"></span>
+            О сайте
+        </h2>
+        <nav class="space-y-0.5">
+            {% for item in menu_sidebar %}
+            {% if item.kind == 'page' %}
+            <a href="{{ item.url }}"
+               class="block rounded-lg px-3 py-2.5 text-sm transition hover:bg-gray-50 hover:text-brand
+                      {% if request.path == item.url %}font-semibold text-brand{% else %}text-gray-600{% endif %}">
+                {{ item.title }}
+            </a>
+            {% endif %}
+            {% endfor %}
+        </nav>
+    </div>
+    {% endif %}
+
+</aside>
+
+<!-- ═══════════════ ОТСТУП ПОД ШАПКУ ═══════════════ -->
+<div class="pt-16">
+    <div class="mx-auto max-w-7xl px-4 py-6 lg:px-6 lg:py-8">
+
+        {# ═══════════ РЕКЛАМА ПОД ШАПКОЙ (внутри контейнера) ═══════════ #}
+        {% load ad_tags %}
+        {% render_ads 'header' %}
+        {# ═══════════════════════════════════════════════════════════════ #}
+
+        <div class="flex gap-8">
+
+            <main class="min-w-0 flex-1">
+
+                <!-- ═══════════════ МОБИЛЬНЫЕ РУБРИКИ (видно только < lg) ═══════════════ -->
+                <details class="mobile-cats mb-6 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:hidden">
+                    <summary class="flex items-center justify-between p-4">
+                        <span class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+                            <span class="h-1.5 w-1.5 rounded-full bg-brand"></span>
+                            Рубрики
+                        </span>
+                        <svg class="chevron h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </summary>
+                    <div class="border-t border-gray-100 p-3">
+                        <div class="flex flex-wrap gap-2">
+                            {% for item in menu_sidebar %}
+                            {% if item.kind == 'category' %}
+                            <a href="{{ item.url }}"
+                               class="rounded-full border px-3 py-1 text-sm transition
+                                      {% if request.path == item.url %}border-brand bg-blue-50 font-semibold text-brand{% else %}border-gray-200 bg-white text-gray-700 hover:border-brand hover:text-brand{% endif %}">
+                                {{ item.title }}
+                            </a>
+                            {% for child in item.children %}
+                            <a href="{{ child.url }}"
+                               class="rounded-full border px-3 py-1 text-sm transition
+                                      {% if request.path == child.url %}border-brand bg-blue-50 font-semibold text-brand{% else %}border-gray-200 bg-white text-gray-500 hover:border-brand hover:text-brand{% endif %}">
+                                {{ child.title }}
+                            </a>
+                            {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </details>
+
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- ═══════════════ САЙДБАР (только ≥ lg) ═══════════════ -->
+            <aside class="hidden w-80 shrink-0 lg:block">
+                <div class="sticky top-24 space-y-6">
+
+                    <!-- Рубрики -->
+                    <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm">
+                        <h2 class="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+                            <span class="h-1.5 w-1.5 rounded-full bg-brand"></span>
+                            Рубрики
+                        </h2>
+                        <nav class="space-y-0.5">
+                            {% for item in menu_sidebar %}
+                            {% if item.kind == 'category' %}
+                            {% if item.children %}
+                            <details class="sidebar-cat"
+                                     {% if request.path == item.url or item.url in request.path %}open{% endif %}>
+                                <summary class="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-brand">
+                                    <a href="{{ item.url }}"
+                                       onclick="event.stopPropagation();"
+                                       class="flex-1 transition {% if request.path == item.url %}font-semibold text-brand{% endif %}">
+                                        {{ item.title }}
+                                    </a>
+                                    <span class="rounded p-0.5 text-gray-400" aria-label="Развернуть">
+                                        <svg class="chevron h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </span>
+                                </summary>
+                                <div class="ml-3 mt-1 space-y-0.5 border-l border-gray-100 pl-3">
+                                    {% for child in item.children %}
+                                    <a href="{{ child.url }}"
+                                       class="block rounded-lg py-1.5 pr-3 text-sm transition hover:bg-gray-50 hover:text-brand
+                                              {% if request.path == child.url %}font-semibold text-brand{% else %}text-gray-500{% endif %}">
+                                        {{ child.title }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </details>
+                            {% else %}
+                            <a href="{{ item.url }}"
+                               class="block rounded-lg px-3 py-2 text-sm transition hover:bg-gray-50 hover:text-brand
+                                      {% if request.path == item.url %}font-semibold text-brand{% else %}font-medium text-gray-700{% endif %}">
+                                {{ item.title }}
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                        </nav>
+                    </div>
+
+                    <!-- Реклама (сайдбар) -->
+                    {% render_ads 'sidebar' %}
+
+                    <!-- Популярное -->
+                    <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm">
+                        <h2 class="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+                            <span class="h-1.5 w-1.5 rounded-full bg-brand"></span>
+                            Популярное
+                        </h2>
+                        <ol class="space-y-3">
+                            {% for p in popular_posts %}
+                            <li class="flex gap-3">
+                                <span class="font-mono text-sm font-bold {% if forloop.counter <= 3 %}text-brand{% else %}text-gray-300{% endif %}">
+                                    {{ forloop.counter|stringformat:"02d" }}
+                                </span>
+                                <a href="{{ p.get_absolute_url }}"
+                                   class="text-sm leading-snug transition hover:text-brand
+                                          {% if forloop.counter <= 3 %}font-medium text-gray-700{% else %}text-gray-500{% endif %}">
+                                    {{ p.title }}
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="text-sm text-gray-400">Пока нет данных о просмотрах.</li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+
+                    <!-- Облако тегов -->
+                    {% if all_tags %}
+                    <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm">
+                        <h2 class="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+                            <span class="h-1.5 w-1.5 rounded-full bg-brand"></span>
+                            Теги
+                        </h2>
+                        <div class="flex flex-wrap gap-2">
+                            {% for t in all_tags %}
+                            <a href="{{ t.get_absolute_url }}"
+                               class="rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 transition hover:border-brand hover:bg-blue-50 hover:text-brand">
+                                #{{ t.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </aside>
+
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ ФУТЕР ═══════════════ -->
+<footer class="mt-16 border-t border-gray-200 bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-12 lg:px-6">
+        <div class="grid gap-10 md:grid-cols-4">
+
+            <div class="md:col-span-2">
+                <a href="{% url 'blog:home' %}" class="text-xl font-extrabold tracking-tight text-gray-900">
+                    Unitprog<span class="text-brand">lab</span>
+                </a>
+                <p class="mt-3 max-w-sm text-sm leading-relaxed text-gray-500">
+                    Unitproglab — блог о технологиях, разработке и IT-индустрии.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Навигация</h3>
+                <ul class="space-y-2 text-sm">
+                    {% for item in menu_footer %}
+                    <li>
+                        <a href="{{ item.url }}" class="text-gray-600 transition hover:text-brand">{{ item.title }}</a>
+                    </li>
+                    {% empty %}
+                    <li class="text-gray-400">Пункты меню пока не настроены.</li>
+                    {% endfor %}
+                    <li>
+                        <a href="{% url 'rss' %}" class="inline-flex items-center gap-1 text-gray-600 transition hover:text-brand">
+                            <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M6.18 17.82a2.18 2.18 0 11-4.36 0 2.18 2.18 0 014.36 0zm-4.18-5.05c3.3 0 6.4 1.28 8.74 3.62 2.34 2.34 3.62 5.44 3.62 8.74h-2.73c0-2.6-1.01-5.04-2.83-6.86A9.62 9.62 0 002 15.44v-2.67zm0-5.32C11.28 7.45 20 16.17 20 27h-2.73c0-9.4-7.6-17-17-17V7.45z"/>
+                            </svg>
+                            RSS-лента
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-gray-100 pt-6 text-sm text-gray-400 sm:flex-row">
+            <p>&copy; {% now "Y" %} Unitproglab. Все права защищены.</p>
+            <p class="font-mono text-xs">SAI <span class="text-brand">♥</span> sai@unitproglab.ru</p>
+        </div>
+    </div>
+</footer>
+
+<!-- ═══════════════ JS: открытие/закрытие мобильного меню ═══════════════ -->
+<script>
+    function toggleMobileMenu(open) {
+        const menu = document.getElementById('mobile-menu');
+        const backdrop = document.getElementById('mobile-backdrop');
+        if (!menu || !backdrop) return;
+
+        if (open) {
+            menu.classList.remove('-translate-x-full');
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100', 'pointer-events-auto');
+            document.body.classList.add('overflow-hidden');
+        } else {
+            menu.classList.add('-translate-x-full');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+            backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+
+    // Закрывать меню по Esc
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') toggleMobileMenu(false);
+    });
+</script>
+
+
+<!-- Скрипт для оптимизации картинок в статьях (Lazy Load и Alt) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const contentBlock = document.querySelector('.prose-content');
+
+        if (contentBlock) {
+            const images = contentBlock.querySelectorAll('img');
+            // Получаем заголовок статьи из data-атрибута (или ставим заглушку)
+            const defaultAlt = contentBlock.getAttribute('data-post-title') || 'Изображение к статье';
+
+            images.forEach(img => {
+                // 1. Включаем ленивую загрузку (Lazy Load)
+                if (!img.hasAttribute('loading')) {
+                    img.setAttribute('loading', 'lazy');
+                }
+                // Добавляем асинхронное декодирование (для скорости)
+                if (!img.hasAttribute('decoding')) {
+                    img.setAttribute('decoding', 'async');
+                }
+
+                // 2. Умный ALT: если он пустой, подставляем заголовок статьи
+                if (!img.alt || img.alt.trim() === '') {
+                    img.alt = defaultAlt;
+                }
+            });
+        }
+    });
+</script>
+
+<!-- Скрипт для слайдера картинок -->
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ищем все картинки внутри текста статьи
+        const images = document.querySelectorAll('.prose-content img');
+
+        images.forEach((img) => {
+            // Если картинка еще не обернута в ссылку
+            if (img.parentElement.tagName !== 'A') {
+                const link = document.createElement('a');
+                link.href = img.src; // Ссылка на полноразмерную версию
+                link.classList.add('glightbox'); // Класс для библиотеки
+                link.setAttribute('data-gallery', 'post-images'); // Группируем картинки в один слайдер
+
+                // Оборачиваем картинку ссылкой
+                img.parentNode.insertBefore(link, img);
+                link.appendChild(img);
+            }
+        });
+
+        // Инициализируем слайдер
+        const lightbox = GLightbox({
+            selector: '.glightbox',
+            touchNavigation: true, // Свайпы на мобильных
+            loop: true,            // Зацикленная прокрутка
+            zoomable: true,        // Возможность зумить в слайдере
+            draggable: true        // Перетаскивание мышкой
+        });
+    });
+</script>
+
+
+<!-- Скрипт для генерации Оглавления (TOC) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const content = document.querySelector('.prose-content');
+        const tocContainer = document.getElementById('toc-container');
+        const tocList = document.getElementById('toc-list');
+
+        if (content && tocContainer && tocList) {
+            // Ищем все заголовки H2 и H3
+            const headings = content.querySelectorAll('h2, h3');
+
+            // Показываем оглавление, только если заголовков 3 или больше
+            if (headings.length >= 3) {
+                headings.forEach((heading, index) => {
+                    // Если у заголовка нет id, генерируем его
+                    if (!heading.id) {
+                        heading.id = `heading-${index}`;
+                    }
+
+                    const a = document.createElement('a');
+                    a.href = `#${heading.id}`;
+                    a.textContent = heading.textContent;
+
+                    // Стили для ссылок в оглавлении
+                    a.className = "block text-gray-600 hover:text-brand transition-colors truncate";
+
+                    // Если это H3, делаем отступ (вложенность)
+                    if (heading.tagName === 'H3') {
+                        a.className = "block pl-4 text-gray-500 hover:text-brand transition-colors truncate text-[13px]";
+                    }
+
+                    tocList.appendChild(a);
+                });
+
+                // Убираем класс hidden, чтобы показать оглавление
+                tocContainer.classList.remove('hidden');
+            }
+        }
+    });
+</script>
+
+
+<!-- ═══════════════ ПЛАШКА COOKIE ═══════════════ -->
+<!-- По умолчанию скрыта (класс hidden) -->
+<div id="cookie-banner" class="hidden fixed bottom-0 left-0 right-0 z-[100] border-t border-gray-200 bg-white p-4 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] sm:p-5">
+    <div class="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <p class="text-sm leading-relaxed text-gray-600">
+            Наш сайт использует файлы <strong class="text-gray-900">cookie</strong> для вашего максимального удобства. Пользуясь сайтом, вы даете свое согласие с условиями пользования cookie.
+        </p>
+        <button type="button" onclick="acceptCookies()"
+                class="shrink-0 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark">
+            Согласен
+        </button>
+    </div>
+</div>
+
+<!-- Скрипт для работы плашки -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Проверяем, согласился ли уже пользователь
+        if (!localStorage.getItem('cookieConsent')) {
+            // Если нет, показываем плашку
+            const banner = document.getElementById('cookie-banner');
+            banner.classList.remove('hidden');
+            // Небольшая анимация появления (сдвиг снизу вверх)
+            setTimeout(() => {
+                banner.classList.add('transition-transform', 'duration-500', 'translate-y-0');
+                banner.classList.remove('translate-y-full');
+            }, 100);
+        }
+    });
+
+    function acceptCookies() {
+        // Сохраняем согласие в браузере пользователя
+        localStorage.setItem('cookieConsent', 'true');
+        // Скрываем плашку
+        const banner = document.getElementById('cookie-banner');
+        banner.classList.add('translate-y-full');
+        setTimeout(() => {
+            banner.classList.add('hidden');
+        }, 500); // Ждем окончания анимации
+    }
+</script>
+<!-- ══════════════════════════════════════════════ -->
+
+
+</body>
+</html>

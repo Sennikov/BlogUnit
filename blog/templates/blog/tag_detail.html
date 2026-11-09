@@ -1,0 +1,26 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Тег: {{ tag.name }} — Unitproglab{% endblock %}
+
+{% block content %}
+<div class="mb-8 border-b border-gray-200 pb-6">
+    <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Тег</p>
+    <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-gray-900">#{{ tag.name }}</h1>
+</div>
+
+<div class="space-y-5">
+    {% for post in page_obj %}
+    {% include "blog/_post_card.html" with post=post %}
+    {% empty %}
+    <p class="text-gray-500">Статей с таким тегом пока нет.</p>
+    {% endfor %}
+</div>
+
+{% include "blog/_pagination.html" %}
+
+<p class="mt-8">
+    <a href="{% url 'blog:home' %}" class="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline">
+        ← На главную
+    </a>
+</p>
+{% endblock %}

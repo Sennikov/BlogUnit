@@ -1,0 +1,30 @@
+<!-- blog/templates/blog/post_list.html -->
+{% extends "blog/base.html" %}
+
+{% block title %}Все статьи{% endblock %}
+
+{% block content %}
+<h2>Все статьи</h2>
+
+{% if posts %}
+<ul>
+    {% for post in posts %}
+    <li>
+        <h3><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
+        <p>
+            <strong>Категория:</strong>
+            {% if post.category %}
+            {{ post.category.name }}
+            {% else %}
+            Без категории
+            {% endif %}
+        </p>
+        <p>{{ post.content|truncatewords:20 }}</p>
+        <small>Создано: {{ post.created_date|date:"d.m.Y H:i" }}</small>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Статей пока нет.</p>
+{% endif %}
+{% endblock %}

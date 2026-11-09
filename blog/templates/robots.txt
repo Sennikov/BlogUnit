@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Не индексируем служебные страницы
+Disallow: /admin/
+Disallow: /search/
+Disallow: /*?page=
+
+# Sitemap
+Sitemap: https://unitproglab.ru/sitemap.xml

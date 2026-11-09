@@ -1,0 +1,60 @@
+{% extends "blog/base.html" %}
+
+{% block title %}{{ category.name }} — Unitproglab{% endblock %}
+
+{% block description %}{{ category.name }} на Unitproglab{% if category.description %} — {{ category.description|truncatewords:20 }}{% endif %}{% endblock %}
+
+{% block canonical %}{{ category.get_absolute_url }}{% endblock %}
+
+{% block og_title %}{{ category.name }} — Unitproglab{% endblock %}
+{% block og_description %}{{ category.name }}{% if category.description %} — {{ category.description|truncatewords:20 }}{% endif %}{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "{{ category.name|escapejs }}",
+        "description": "{{ category.description|default:''|escapejs }}",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{{ category.get_absolute_url }}"
+    }
+</script>
+{% endblock %}
+{% block content %}
+{% include "blog/_breadcrumbs.html" %}
+
+<div class="mb-8 border-b border-gray-200 pb-6">
+    <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Рубрика</p>
+    <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-gray-900">{{ category.name }}</h1>
+    {% if category.description %}
+    <p class="mt-2 max-w-2xl text-gray-600 leading-relaxed">{{ category.description }}</p>
+    {% endif %}
+
+    {% if subcategories %}
+    <div class="mt-4 flex flex-wrap gap-2">
+        {% for sub in subcategories %}
+        <a href="{{ sub.get_absolute_url }}"
+           class="rounded-full border border-gray-200 bg-white px-3 py-1 text-sm font-medium text-gray-600 transition hover:border-brand hover:text-brand">
+            {{ sub.name }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<div class="space-y-5">
+    {% for post in page_obj %}
+    {% include "blog/_post_card.html" with post=post %}
+    {% empty %}
+    <p class="text-gray-500">В этой рубрике пока нет статей.</p>
+    {% endfor %}
+</div>
+
+{% include "blog/_pagination.html" %}
+
+<p class="mt-8">
+    <a href="{% url 'blog:home' %}" class="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline">
+        ← На главную
+    </a>
+</p>
+{% endblock %}

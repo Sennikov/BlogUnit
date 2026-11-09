@@ -1,0 +1,46 @@
+<nav aria-label="breadcrumb" class="mb-6">
+    <ol class="flex flex-wrap items-center gap-2 text-sm text-gray-400" itemscope itemtype="https://schema.org/BreadcrumbList">
+
+
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="{% url 'blog:home' %}" class="transition hover:text-brand">
+                <span itemprop="name">Главная</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+
+        {# ─── Статья или страница ─── #}
+        {% if post %}
+        {% if post.category %}
+        {% for ancestor in post.category.get_ancestors %}
+        <li aria-hidden="true" class="text-gray-300">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="{{ ancestor.get_absolute_url }}" class="transition hover:text-brand">
+                <span itemprop="name">{{ ancestor.name }}</span>
+            </a>
+            <meta itemprop="position" content="{{ forloop.counter|add:1 }}" />
+        </li>
+        {% endfor %}
+        {% endif %}
+
+        <li aria-hidden="true" class="text-gray-300">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name" class="truncate font-medium text-gray-700 max-w-[240px] sm:max-w-md">{{ post.title }}</span>
+            <meta itemprop="position" content="{% if post.category %}{{ post.category.get_ancestors|length|add:2 }}{% else %}2{% endif %}" />
+        </li>
+
+        {# ─── Категория ─── #}
+        {% elif category %}
+        {% for ancestor in category.get_ancestors %}
+        <li aria-hidden="true" class="text-gray-300">/</li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a itemprop="item" href="{{ ancestor.get_absolute_url }}" class="transition hover:text-brand">
+                <span itemprop="name">{{ ancestor.name }}</span>
+            </a>
+            <meta itemprop="position" content="{{ forloop.counter|add:1 }}" />
+        </li>
+        {% endfor %}
+        {% endif %}
+
+    </ol>
+</nav>

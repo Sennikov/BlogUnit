@@ -1,0 +1,29 @@
+.menu-header { display: flex; gap: 8px; align-items: center; }
+.menu-item-wrap { position: relative; }
+.menu-item-wrap > a { padding: 8px 6px; display: inline-block; text-decoration: none; }
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 100;
+    padding: 6px 0;
+}
+.dropdown a {
+    display: block;
+    padding: 8px 14px;
+    text-decoration: none;
+    color: #333;
+}
+.dropdown a:hover { background: #f2f2f2; }
+
+.menu-item-wrap:hover .dropdown { display: block; }
+
+/* Сайдбар: дети с отступом */
+.sidebar .menu-item.root { font-weight: 600; margin-top: 8px; }
+.sidebar .menu-item.child { padding-left: 12px; color: #555; font-size: 0.95em; }

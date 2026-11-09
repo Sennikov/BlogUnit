@@ -1,0 +1,47 @@
+{% load martortags %}
+<article class="group overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-all duration-300 hover:border-gray-300 hover:shadow-md">
+    <div class="flex flex-col sm:flex-row">
+
+        {% if post.preview %}
+        <a href="{{ post.get_absolute_url }}"
+           class="block shrink-0 overflow-hidden sm:w-64 lg:w-72">
+            <img src="{{ post.preview.url }}" alt="{{ post.title }}"
+                 class="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105 sm:h-full">
+        </a>
+        {% endif %}
+
+        <div class="flex min-w-0 flex-1 flex-col justify-between p-5 lg:p-6">
+            <div>
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                    {% if post.category %}
+                    <a href="{{ post.category.get_absolute_url }}"
+                       class="rounded-full bg-blue-50 px-2.5 py-1 font-semibold text-brand transition hover:bg-blue-100">
+                        {{ post.category.name }}
+                    </a>
+                    {% endif %}
+                    <time class="font-mono text-gray-400">{{ post.published_date|date:"d.m.Y" }}</time>
+                </div>
+
+                <h2 class="mt-3 text-xl font-bold leading-snug tracking-tight text-gray-900 transition group-hover:text-brand lg:text-2xl">
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                </h2>
+
+                <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-gray-500">
+                    {% if post.meta_description %}
+                    {{ post.meta_description }}
+                    {% else %}
+                    {{ post.content|safe_markdown|striptags|truncatewords:30 }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <a href="{{ post.get_absolute_url }}"
+               class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand transition-all hover:gap-2">
+                Читать
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</article>
