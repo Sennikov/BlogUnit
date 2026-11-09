@@ -47,7 +47,7 @@ def get_git_info():
         subprocess.run([git, 'fetch'], cwd=settings.BASE_DIR, check=True, capture_output=True)
 
         local_hash = subprocess.check_output([git, 'rev-parse', 'HEAD'], cwd=settings.BASE_DIR).decode().strip()
-        remote_hash = subprocess.check_output([git, 'rev-parse', f'origin/{branch}'], cwd=settings.BASE_DIR).decode().strip()
+        remote_hash = subprocess.check_output([git, 'rev-parse', 'origin/main'], cwd=settings.BASE_DIR).decode().strip()
 
         info['update_available'] = (local_hash != remote_hash)
     except Exception as e:
